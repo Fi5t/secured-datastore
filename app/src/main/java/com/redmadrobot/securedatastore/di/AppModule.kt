@@ -1,8 +1,8 @@
 package com.redmadrobot.securedatastore.di
 
 import android.app.Application
-import androidx.datastore.DataStore
-import androidx.datastore.createDataStore
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.AesGcmKeyManager
@@ -12,12 +12,13 @@ import com.redmadrobot.securedatastore.datastore.UserSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
+import java.io.File
 import javax.inject.Singleton
 
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 class AppModule {
     companion object {
         private const val KEYSET_NAME = "master_keyset"
@@ -43,8 +44,8 @@ class AppModule {
 
     @Provides
     fun provideDataStore(application: Application, aead: Aead): DataStore<User> {
-        return application.createDataStore(
-            fileName = DATASTORE_FILE,
+        return DataStoreFactory.create(
+            produceFile = { File(application.filesDir, "datastore/$DATASTORE_FILE") },
             serializer = UserSerializer(aead)
         )
     }

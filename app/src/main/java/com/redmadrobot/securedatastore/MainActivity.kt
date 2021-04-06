@@ -2,7 +2,7 @@ package com.redmadrobot.securedatastore
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.DataStore
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
