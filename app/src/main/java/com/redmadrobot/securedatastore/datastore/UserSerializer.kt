@@ -1,7 +1,7 @@
 package com.redmadrobot.securedatastore.datastore
 
-import androidx.datastore.CorruptionException
-import androidx.datastore.Serializer
+import androidx.datastore.core.CorruptionException
+import androidx.datastore.core.Serializer
 import com.google.crypto.tink.Aead
 import com.google.protobuf.InvalidProtocolBufferException
 import com.redmadrobot.securedatastore.User
@@ -10,7 +10,7 @@ import java.io.OutputStream
 
 
 class UserSerializer(private val aead: Aead) : Serializer<User> {
-    override fun readFrom(input: InputStream): User {
+    override suspend fun readFrom(input: InputStream): User {
         return try {
             val encryptedInput = input.readBytes()
 
@@ -27,9 +27,12 @@ class UserSerializer(private val aead: Aead) : Serializer<User> {
         }
     }
 
-    override fun writeTo(user: User, output: OutputStream) {
+    override suspend fun writeTo(user: User, output: OutputStream) {
         val encryptedBytes = aead.encrypt(user.toByteArray(), null)
 
         output.write(encryptedBytes)
     }
+
+    override val defaultValue: User =
+        User.getDefaultInstance()
 }
