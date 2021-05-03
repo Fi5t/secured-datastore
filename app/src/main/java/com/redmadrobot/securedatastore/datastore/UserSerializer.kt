@@ -3,8 +3,9 @@ package com.redmadrobot.securedatastore.datastore
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.crypto.tink.Aead
-import com.google.protobuf.InvalidProtocolBufferException
 import com.redmadrobot.securedatastore.User
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.protobuf.ProtoBuf
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -20,19 +21,19 @@ class UserSerializer(private val aead: Aead) : Serializer<User> {
                 encryptedInput
             }
 
-            User.parseFrom(decryptedInput)
-
-        } catch (e: InvalidProtocolBufferException) {
+            ProtoBuf.decodeFromByteArray(User.serializer(), decryptedInput)
+        } catch (e: SerializationException) {
             throw CorruptionException("Error deserializing proto", e)
         }
     }
 
     override suspend fun writeTo(user: User, output: OutputStream) {
-        val encryptedBytes = aead.encrypt(user.toByteArray(), null)
+        val byteArray = ProtoBuf.encodeToByteArray(User.serializer(), user)
+        val encryptedBytes = aead.encrypt(byteArray, null)
 
         output.write(encryptedBytes)
     }
 
     override val defaultValue: User =
-        User.getDefaultInstance()
+        User()
 }
