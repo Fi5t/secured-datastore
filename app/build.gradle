@@ -1,10 +1,11 @@
-apply plugin: "com.android.application"
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
-apply plugin: "com.google.protobuf"
-apply plugin: "kotlin-kapt"
-apply plugin: "dagger.hilt.android.plugin"
-
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-android-extensions"
+    id "kotlin-kapt"
+    id "dagger.hilt.android.plugin"
+    id "org.jetbrains.kotlin.plugin.serialization" version "$kotlin_version"
+}
 
 android {
     compileSdkVersion 30
@@ -28,30 +29,14 @@ android {
     }
 }
 
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:$google_protobuf_version"
-    }
-
-    generateProtoTasks {
-        all().each { task ->
-            task.builtins {
-                java {
-                    option "lite"
-                }
-            }
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.appcompat:appcompat:1.2.0"
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
 
-    implementation "androidx.datastore:datastore-core:1.0.0-alpha08"
-    implementation  "com.google.protobuf:protobuf-javalite:$google_protobuf_version"
+    implementation "androidx.datastore:datastore-core:1.0.0-beta01"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:$kotlin_serialization_version"
 
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha01"
     implementation "com.google.dagger:hilt-android:$hilt_version"

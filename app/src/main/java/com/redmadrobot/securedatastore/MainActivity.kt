@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private val userDataFlow: Flow<User> by lazy {
         userDataStore.data.catch { e ->
             if (e is IOException) {
-                emit(User.getDefaultInstance())
+                emit(User())
             } else {
                 throw e
             }
@@ -54,10 +54,10 @@ class MainActivity : AppCompatActivity() {
     private fun saveUserData() {
         lifecycleScope.launch {
             userDataStore.updateData { user ->
-                user.toBuilder()
-                    .setName(user_name.text.toString())
-                    .setPassword(user_password.text.toString())
-                    .build()
+                user.copy(
+                    name = user_name.text.toString(),
+                    password = user_password.text.toString(),
+                )
             }
         }.invokeOnCompletion {
             user_name.text.clear()
